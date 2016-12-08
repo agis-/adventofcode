@@ -10,6 +10,7 @@ OPPOSING = { N: :S,
 
 $facing = :N
 $far = Hash.new(0)
+$history = {}
 
 def move(dir, blocks)
   $facing = MAPPINGS[$facing][dir]
@@ -22,9 +23,20 @@ def move(dir, blocks)
     elsif x == 0
       $far[$facing] += 1
     end
+
+    if $history[$far]
+      raise $far.values.inject(:+).to_s
+    else
+      $history[$far] = true
+      false
+    end
   end
 end
 
-STDIN.read.scan(/\w\d+/).each { |i| move(i.slice!(0, 1), i) }
+begin
+  STDIN.read.scan(/\w\d+/).each { |i| move(i.slice!(0, 1), i) }
+  puts $far.values.inject(:+)
+rescue => e
+  puts e.message
+end
 
-puts $far.values.inject(:+)
